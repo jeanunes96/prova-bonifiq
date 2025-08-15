@@ -6,18 +6,39 @@ namespace ProvaPub.Services
 {
     public class CustomerService
     {
-        TestDbContext _ctx;
+        private readonly TestDbContext _ctx;
+        private const int PageSize = 10; // Tamanho da página padrão
 
+        // Injeção de dependência do DbContext
         public CustomerService(TestDbContext ctx)
         {
             _ctx = ctx;
         }
 
-        public CustomerList ListCustomers(int page)
+        /// <summary>
+        /// Lista clientes com paginação
+        /// </summary>
+        public async Task<CustomerList> ListCustomersAsync(int page)
         {
-            return new CustomerList() { HasNext = false, TotalCount = 10, Customers = _ctx.Customers.ToList() };
+            if (page <= 0) page = 1;
+
+            var totalCount = await _ctx.Customers.CountAsync();
+            var customers = await _ctx.Customers
+                .Skip((page - 1) * PageSize)
+                .Take(PageSize)
+                .ToListAsync();
+
+            return new CustomerList
+            {
+                Customers = customers,
+                TotalCount = totalCount,
+                HasNext = page * PageSize < totalCount
+            };
         }
 
+        /// <summary>
+        /// Verifica se o cliente pode realizar a compra
+        /// </summary>
         public async Task<bool> CanPurchase(int customerId, decimal purchaseValue)
         {
             if (customerId <= 0) throw new ArgumentOutOfRangeException(nameof(customerId));
@@ -43,9 +64,7 @@ namespace ProvaPub.Services
             if (DateTime.UtcNow.Hour < 8 || DateTime.UtcNow.Hour > 18 || DateTime.UtcNow.DayOfWeek == DayOfWeek.Saturday || DateTime.UtcNow.DayOfWeek == DayOfWeek.Sunday)
                 return false;
 
-
             return true;
         }
-
     }
 }

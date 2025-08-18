@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
+    <ProjectReference Include="..\ProvaPub.Application\ProvaPub.Application.csproj" />
+    <ProjectReference Include="..\ProvaPub.Infrastructure\ProvaPub.Infrastructure.csproj" />
   </ItemGroup>
-
 </Project>

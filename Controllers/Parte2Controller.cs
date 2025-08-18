@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ProvaPub.Models;
-using ProvaPub.Services;
+using ProvaPub.Application.Services;
+using ProvaPub.Domain.Models;
 
 namespace ProvaPub.Controllers
 {
@@ -27,13 +27,13 @@ namespace ProvaPub.Controllers
         }
 
         [HttpGet("products")]
-        public async Task<ProductList> ListProducts(int page)
+        public async Task<PagedList<Product>> ListProducts(int page)
         {
             return await _productService.ListProductsAsync(page);
         }
 
         [HttpGet("customers")]
-        public async Task<CustomerList> ListCustomers(int page)
+        public async Task<PagedList<Customer>> ListCustomers(int page)
         {
             return await _customerService.ListCustomersAsync(page);
         }
